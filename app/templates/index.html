@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+
+    <meta
+        name="description"
+        content="Monitor automático de novedades sobre Python y Flutter"
+    >
+
+    <title>{{ nombre_app }}</title>
+
+    <!-- Bootstrap -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <!-- Estilos propios -->
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', path='/css/styles.css') }}"
+    >
+</head>
+
+<body>
+
+    <!-- Barra de navegación -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a
+                class="navbar-brand fw-bold"
+                href="/"
+            >
+                PyFlutter Radar
+            </a>
+
+            <span class="navbar-text">
+                Python · Flutter
+            </span>
+        </div>
+    </nav>
+
+    <!-- Contenido principal -->
+    <main class="container py-5">
+
+        <!-- Encabezado -->
+        <section
+            class="d-flex flex-column flex-md-row
+                   justify-content-between align-items-md-center
+                   gap-3 mb-5"
+        >
+            <div>
+                <h1 class="fw-bold mb-2">
+                    Últimas novedades
+                </h1>
+
+                <p class="text-secondary mb-1">
+                    Publicaciones relevantes sobre Python y Flutter.
+                </p>
+
+                <small class="text-secondary">
+                    Escaneo automático cada
+                    {{ intervalo_escaneo }} minutos.
+                </small>
+            </div>
+
+            <!-- Botón de escaneo manual -->
+            <form
+                action="/escanear"
+                method="post"
+            >
+                <button
+                    class="btn btn-primary"
+                    type="submit"
+                >
+                    Escanear ahora
+                </button>
+            </form>
+        </section>
+
+        <!-- Resumen -->
+        <section class="row g-3 mb-5">
+
+            <div class="col-12 col-md-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <p class="text-secondary mb-1">
+                            Publicaciones guardadas
+                        </p>
+
+                        <strong class="fs-3">
+                            {{ publicaciones | length }}
+                        </strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <p class="text-secondary mb-1">
+                            Intervalo de escaneo
+                        </p>
+
+                        <strong class="fs-3">
+                            {{ intervalo_escaneo }}
+                        </strong>
+
+                        <span class="text-secondary">
+                            minutos
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <p class="text-secondary mb-1">
+                            Estado del escáner
+                        </p>
+
+                        <span class="badge text-bg-success">
+                            Activo
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Encabezado de publicaciones -->
+        <section
+            class="d-flex justify-content-between
+                   align-items-center mb-4"
+        >
+            <h2 class="h4 fw-bold mb-0">
+                Publicaciones encontradas
+            </h2>
+
+            <a
+                href="/"
+                class="btn btn-outline-secondary btn-sm"
+            >
+                Actualizar
+            </a>
+        </section>
+
+        <!-- Lista de publicaciones -->
+        <section class="row g-4">
+
+            {% for publicacion in publicaciones %}
+
+                <div class="col-12 col-md-6 col-xl-4">
+                    <article class="card h-100 shadow-sm">
+
+                        <div class="card-body d-flex flex-column">
+
+                            <!-- Categoría -->
+                            <div class="mb-3">
+
+                                {% if publicacion.fuente.categoria == "Python" %}
+
+                                    <span class="badge text-bg-warning">
+                                        Python
+                                    </span>
+
+                                {% elif publicacion.fuente.categoria == "Flutter" %}
+
+                                    <span class="badge text-bg-info">
+                                        Flutter
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge text-bg-secondary">
+                                        {{ publicacion.fuente.categoria }}
+                                    </span>
+
+                                {% endif %}
+
+                                {% if publicacion.enviada_telegram %}
+
+                                    <span class="badge text-bg-success">
+                                        Telegram
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge text-bg-secondary">
+                                        Pendiente
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+                            <!-- Título -->
+                            <h3 class="card-title h5">
+                                {{ publicacion.titulo }}
+                            </h3>
+
+                            <!-- Fuente -->
+                            <p class="text-secondary small mb-2">
+                                Fuente:
+                                <strong>
+                                    {{ publicacion.fuente.nombre }}
+                                </strong>
+                            </p>
+
+                            <!-- Fecha de publicación -->
+                            {% if publicacion.fecha_publicacion %}
+
+                                <p class="text-secondary small mb-3">
+                                    Publicado:
+                                    {{ publicacion.fecha_publicacion.strftime("%d/%m/%Y") }}
+                                </p>
+
+                            {% else %}
+
+                                <p class="text-secondary small mb-3">
+                                    Fecha no disponible
+                                </p>
+
+                            {% endif %}
+
+                            <!-- Resumen -->
+                            <p class="card-text">
+                                {% if publicacion.resumen %}
+
+                                    {{ publicacion.resumen[:250] }}
+
+                                    {% if publicacion.resumen | length > 250 %}
+                                        ...
+                                    {% endif %}
+
+                                {% else %}
+
+                                    Esta publicación no tiene un resumen disponible.
+
+                                {% endif %}
+                            </p>
+
+                            <!-- Enlace de la publicación -->
+                            <div class="mt-auto pt-3">
+                                <a
+                                    href="{{ publicacion.url }}"
+                                    class="btn btn-outline-primary"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    Leer publicación
+                                </a>
+                            </div>
+
+                        </div>
+
+                        <!-- Pie de la tarjeta -->
+                        <div
+                            class="card-footer bg-transparent
+                                   border-top text-secondary small"
+                        >
+                            Encontrada:
+
+                            {% if publicacion.fecha_descubrimiento %}
+
+                                {{ publicacion.fecha_descubrimiento.strftime("%d/%m/%Y %H:%M") }}
+
+                            {% else %}
+
+                                Fecha desconocida
+
+                            {% endif %}
+                        </div>
+
+                    </article>
+                </div>
+
+            {% else %}
+
+                <!-- Aparece cuando no hay publicaciones -->
+                <div class="col-12">
+                    <div
+                        class="alert alert-secondary
+                               text-center py-5"
+                        role="alert"
+                    >
+                        <h2 class="h5 fw-bold">
+                            Todavía no existen publicaciones
+                        </h2>
+
+                        <p class="mb-3">
+                            El escáner automático comenzará a
+                            buscar información al iniciar la aplicación.
+                        </p>
+
+                        <form
+                            action="/escanear"
+                            method="post"
+                        >
+                            <button
+                                class="btn btn-primary"
+                                type="submit"
+                            >
+                                Ejecutar primer escaneo
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+            {% endfor %}
+
+        </section>
+
+    </main>
+
+    <!-- Pie de página -->
+    <footer class="border-top bg-white mt-5">
+        <div class="container py-4">
+
+            <div
+                class="d-flex flex-column flex-md-row
+                       justify-content-between align-items-center
+                       gap-2 text-secondary"
+            >
+                <small>
+                    PyFlutter Radar
+                </small>
+
+                <small>
+                    Escaneo automático de Python y Flutter
+                </small>
+            </div>
+
+        </div>
+    </footer>
+
+    <!-- JavaScript de Bootstrap -->
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    ></script>
+
+</body>
+</html>

@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+jinja2
+python-multipart
+httpx
+feedparser
+beautifulsoup4
+python-dotenv
+sqlalchemy
+apscheduler
+psycopg2-binary

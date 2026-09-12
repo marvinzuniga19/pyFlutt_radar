@@ -1,0 +1,26 @@
+body {
+    min-height: 100vh;
+    background-color: #f4f7fa;
+}
+
+.navbar-brand {
+    letter-spacing: -0.03em;
+}
+
+.card {
+    border: none;
+    border-radius: 16px;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgb(0 0 0 / 10%) !important;
+}
+
+.badge {
+    padding: 8px 12px;
+    border-radius: 20px;
+}
